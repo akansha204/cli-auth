@@ -5,21 +5,22 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
 type App struct {
 	DatabasePath     string
-	SessionTimeout   int
-	LockoutDuration  int
+	SessionTimeout   time.Duration
+	LockoutDuration  time.Duration
 	MaxLoginAttempts int
 }
 
 var AppConfig = App{
 	DatabasePath:     "data/app.db",
-	SessionTimeout:   3600,
-	LockoutDuration:  900,
+	SessionTimeout:   time.Hour,
+	LockoutDuration:  15 * time.Minute,
 	MaxLoginAttempts: 5,
 }
 
@@ -30,8 +31,8 @@ func Load() error {
 
 	AppConfig = App{
 		DatabasePath:     getEnv("DATABASE_PATH", AppConfig.DatabasePath),
-		SessionTimeout:   getEnvInt("SESSION_TIMEOUT", AppConfig.SessionTimeout),
-		LockoutDuration:  getEnvInt("LOCKOUT_DURATION", AppConfig.LockoutDuration),
+		SessionTimeout:   getEnvDuration("SESSION_TIMEOUT", AppConfig.SessionTimeout),
+		LockoutDuration:  getEnvDuration("LOCKOUT_DURATION", AppConfig.LockoutDuration),
 		MaxLoginAttempts: getEnvInt("MAX_LOGIN_ATTEMPTS", AppConfig.MaxLoginAttempts),
 	}
 
@@ -48,6 +49,15 @@ func getEnv(key, fallback string) string {
 func getEnvInt(key string, fallback int) int {
 	if value := os.Getenv(key); value != "" {
 		if parsed, err := strconv.Atoi(value); err == nil {
+			return parsed
+		}
+	}
+	return fallback
+}
+
+func getEnvDuration(key string, fallback time.Duration) time.Duration {
+	if value := os.Getenv(key); value != "" {
+		if parsed, err := time.ParseDuration(value); err == nil {
 			return parsed
 		}
 	}
