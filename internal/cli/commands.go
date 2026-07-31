@@ -2,7 +2,7 @@ package cli
 
 import "errors"
 
-var errQuit = errors.New("quit")
+var errExit = errors.New("exit")
 
 type command struct {
 	name    string
@@ -16,10 +16,10 @@ func commandList() []command {
 		{name: "register", usage: "create a new account", handler: cmdRegister},
 		{name: "login", usage: "log in to your account", handler: cmdLogin},
 		{name: "logout", usage: "end the current session", handler: cmdLogout},
-		{name: "status", usage: "show the current session", handler: cmdStatus},
-		{name: "mfa", usage: "enable two-factor authentication", handler: cmdEnableMFA},
-		{name: "disable-mfa", usage: "disable two-factor authentication", handler: cmdDisableMFA},
-		{name: "quit", usage: "exit the application", handler: cmdQuit},
+		{name: "whoami", usage: "show the current session", handler: cmdStatus},
+		{name: "enable-2fa", usage: "enable two-factor authentication", handler: cmdEnableMFA},
+		{name: "disable-2fa", usage: "disable two-factor authentication", handler: cmdDisableMFA},
+		{name: "exit", usage: "exit the application", handler: cmdExit},
 	}
 }
 

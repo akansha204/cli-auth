@@ -95,10 +95,10 @@ docker compose down
 | `register`     | Create a new account                        |
 | `login`        | Log in to your account                      |
 | `logout`       | End the current session                     |
-| `status`       | Show the current session                    |
-| `mfa`          | Enable TOTP two-factor authentication       |
-| `disable-mfa`  | Disable two-factor authentication           |
-| `quit`         | Exit the application                        |
+| `whoami`       | Show the current session                    |
+| `enable-2fa`   | Enable TOTP two-factor authentication       |
+| `disable-2fa`  | Disable two-factor authentication           |
+| `exit`         | Exit the application                        |
 
 ## Usage
 
@@ -123,10 +123,10 @@ Logged in as alice
 
 ### Enable 2FA
 
-After logging in, run `mfa` and add the account to your authenticator app (e.g. Google Authenticator) using the printed secret or the `otpauth://` URI:
+After logging in, run `enable-2fa` and add the account to your authenticator app (e.g. Google Authenticator) using the printed secret or the `otpauth://` URI:
 
 ```
-> mfa
+> enable-2fa
 MFA enabled. Add this account to your authenticator app:
   Secret: YW5IISF23BA6BK22ORLGQ2TB4SH5HG4G
   URI:    otpauth://totp/cli-auth:alice?algorithm=SHA1&digits=6&issuer=cli-auth&period=30&secret=...
@@ -145,7 +145,7 @@ Logged in as alice
 ### Check session status
 
 ```
-> status
+> whoami
 Logged in as alice
 Session expires: 2026-07-31 16:52:37
 Last login: 2026-07-31 15:52:37

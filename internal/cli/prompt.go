@@ -48,7 +48,7 @@ func (a *App) Run() error {
 		line, err := rl.Readline()
 		if err != nil {
 			if errors.Is(err, readline.ErrInterrupt) {
-				fmt.Println("(type 'quit' to exit)")
+				fmt.Println("(type 'exit' to quit)")
 				continue
 			}
 			if errors.Is(err, io.EOF) {
@@ -70,7 +70,7 @@ func (a *App) Run() error {
 		}
 
 		if err := cmd.handler(a, fields[1:]); err != nil {
-			if errors.Is(err, errQuit) {
+			if errors.Is(err, errExit) {
 				fmt.Println("bye")
 				return nil
 			}

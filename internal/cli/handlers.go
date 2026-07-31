@@ -173,6 +173,6 @@ func cmdDisableMFA(a *App, _ []string) error {
 	return nil
 }
 
-func cmdQuit(_ *App, _ []string) error {
-	return errQuit
+func cmdExit(_ *App, _ []string) error {
+	return errExit
 }
