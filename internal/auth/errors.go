@@ -12,4 +12,11 @@ var (
 	ErrInvalidCredentials = errors.New("invalid username or password")
 
 	ErrAccountLocked = errors.New("account is temporarily locked")
+
+	ErrMFARequired    = errors.New("MFA code required")
+	ErrInvalidTOTP    = errors.New("invalid MFA code")
+	ErrMFAEnabled     = errors.New("MFA is already enabled")
+	ErrMFANotEnabled  = errors.New("MFA is not enabled")
+	ErrNoSession      = errors.New("no active session")
+	ErrSessionExpired = errors.New("session has expired")
 )

@@ -95,6 +95,14 @@ func (a *AuthService) Login(username, password string) (*models.User, error) {
 
 	ResetFailedAttempts(user)
 
+	if user.MFAEnabled {
+		if err := a.userRepo.Update(user); err != nil {
+			return nil, err
+		}
+
+		return nil, ErrMFARequired
+	}
+
 	now := time.Now()
 	user.LastLogin = &now
 
@@ -103,4 +111,94 @@ func (a *AuthService) Login(username, password string) (*models.User, error) {
 	}
 
 	return user, nil
+}
+
+func (a *AuthService) VerifyMFA(username, code string) (*models.User, error) {
+	user, err := a.userRepo.FindByUsername(strings.ToLower(strings.TrimSpace(username)))
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, ErrInvalidCredentials
+	}
+
+	if !user.MFAEnabled {
+		return nil, ErrInvalidTOTP
+	}
+
+	if !ValidateTOTPCode(user.TOTPSecret, strings.TrimSpace(code)) {
+		return nil, ErrInvalidTOTP
+	}
+
+	now := time.Now()
+	user.LastLogin = &now
+
+	if err := a.userRepo.Update(user); err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (a *AuthService) EnableMFA(username string) (string, string, error) {
+	user, err := a.userRepo.FindByUsername(strings.ToLower(strings.TrimSpace(username)))
+	if err != nil {
+		return "", "", err
+	}
+
+	if user == nil {
+		return "", "", ErrUserNotFound
+	}
+
+	if user.MFAEnabled {
+		return "", "", ErrMFAEnabled
+	}
+
+	secret, uri, err := GenerateTOTPSecret(user.Username)
+	if err != nil {
+		return "", "", err
+	}
+
+	user.TOTPSecret = secret
+	user.MFAEnabled = true
+
+	if err := a.userRepo.Update(user); err != nil {
+		return "", "", err
+	}
+
+	return secret, uri, nil
+}
+
+func (a *AuthService) DisableMFA(username string) error {
+	user, err := a.userRepo.FindByUsername(strings.ToLower(strings.TrimSpace(username)))
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return ErrUserNotFound
+	}
+
+	if !user.MFAEnabled {
+		return ErrMFANotEnabled
+	}
+
+	user.TOTPSecret = ""
+	user.MFAEnabled = false
+
+	return a.userRepo.Update(user)
+}
+
+func (a *AuthService) HasMFA(username string) (bool, error) {
+	user, err := a.userRepo.FindByUsername(strings.ToLower(strings.TrimSpace(username)))
+	if err != nil {
+		return false, err
+	}
+
+	if user == nil {
+		return false, ErrUserNotFound
+	}
+
+	return user.MFAEnabled, nil
 }
