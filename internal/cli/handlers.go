@@ -81,8 +81,7 @@ func cmdLogin(a *App, _ []string) error {
 	a.user = user
 	a.sess = sess
 
-	fmt.Printf("Logged in as %s\n", user.Username)
-	return nil
+	return printSessionInfo(a)
 }
 
 func cmdLogout(a *App, _ []string) error {
@@ -107,6 +106,10 @@ func cmdStatus(a *App, _ []string) error {
 		return nil
 	}
 
+	return printSessionInfo(a)
+}
+
+func printSessionInfo(a *App) error {
 	sess, err := a.sessions.Active(a.user.ID)
 	if errors.Is(err, session.ErrNoSession) {
 		a.user = nil
@@ -125,6 +128,7 @@ func cmdStatus(a *App, _ []string) error {
 	a.sess = sess
 
 	fmt.Printf("Logged in as %s\n", a.user.Username)
+	fmt.Printf("Registered: %s\n", utils.FormatTime(a.user.RegisteredAt))
 	fmt.Printf("Session expires: %s\n", utils.FormatTime(sess.ExpiresAt))
 
 	if a.user.LastLogin != nil {
