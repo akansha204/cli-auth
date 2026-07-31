@@ -13,6 +13,8 @@ import (
 	"github.com/akansha204/cli-auth/internal/session"
 )
 
+const mainPrompt = "> "
+
 type App struct {
 	auth     *auth.AuthService
 	sessions *session.Manager
@@ -31,7 +33,7 @@ func NewApp(authService *auth.AuthService, sessionManager *session.Manager) *App
 
 func (a *App) Run() error {
 	rl, err := readline.NewEx(&readline.Config{
-		Prompt:       "> ",
+		Prompt:       mainPrompt,
 		AutoComplete: newCompleter(),
 	})
 	if err != nil {
@@ -42,6 +44,7 @@ func (a *App) Run() error {
 	a.rl = rl
 
 	for {
+		rl.SetPrompt(mainPrompt)
 		line, err := rl.Readline()
 		if err != nil {
 			if errors.Is(err, readline.ErrInterrupt) {
