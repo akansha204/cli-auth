@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/akansha204/cli-auth/internal/config"
-	"github.com/akansha204/cli-auth/internal/models"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -22,10 +21,7 @@ func Initialize() error {
 
 	log.Println("Connected to SQLite")
 
-	if err := DB.AutoMigrate(
-		&models.User{},
-		&models.Session{},
-	); err != nil {
+	if err := Migrate(DB); err != nil {
 		return err
 	}
 
